@@ -2,20 +2,24 @@
 
 # This stage is used when running from VS in fast mode (Default for Debug configuration)
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-USER $APP_UID
 WORKDIR /app
 EXPOSE 8080
 
 
-# This stage is used to build the service project
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
+
 COPY ["SteelWarehouse/SteelWarehouse.csproj", "SteelWarehouse/"]
-RUN dotnet restore "./SteelWarehouse/SteelWarehouse.csproj"
+COPY ["SteelWarehouse.App/SteelWarehouse.App.csproj", "SteelWarehouse.App/"]
+COPY ["SteelWarehouse.Domain/SteelWarehouse.Domain.csproj", "SteelWarehouse.Domain/"]
+COPY ["SteelWarehouse.Infrastructure/SteelWarehouse.Infrastructure.csproj", "SteelWarehouse.Infrastructure/"]
+
+RUN dotnet restore "SteelWarehouse/SteelWarehouse.csproj"
+
 COPY . .
 WORKDIR "/src/SteelWarehouse"
-RUN dotnet build "./SteelWarehouse.csproj" -c $BUILD_CONFIGURATION -o /app/build
+RUN dotnet build "SteelWarehouse.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # This stage is used to publish the service project to be copied to the final stage
 FROM build AS publish

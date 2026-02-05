@@ -1,0 +1,30 @@
+services:
+  db:
+    image: postgres:15
+    container_name: steelwarehouse-db
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=steelwarehousedb
+      - TZ=Europe/Moscow
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+
+  api:
+    container_name: steelwarehouse-api
+    build:
+      context: .
+      dockerfile: SteelWarehouse/Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      - Storage__Type=Postgres
+      - ConnectionStrings__Default=Host=db;Port=5432;Database=steelwarehousedb;Username=user;Password=password
+      - TZ=Europe/Moscow
+
+volumes:
+  postgres_data:
