@@ -15,7 +15,7 @@ COPY ["SteelWarehouse.App/SteelWarehouse.App.csproj", "SteelWarehouse.App/"]
 COPY ["SteelWarehouse.Domain/SteelWarehouse.Domain.csproj", "SteelWarehouse.Domain/"]
 COPY ["SteelWarehouse.Infrastructure/SteelWarehouse.Infrastructure.csproj", "SteelWarehouse.Infrastructure/"]
 
-RUN dotnet restore "SteelWarehouse/SteelWarehouse.csproj"
+RUN dotnet restore "SteelWarehouse/SteelWarehouse.Api.csproj"
 
 COPY . .
 WORKDIR "/src/SteelWarehouse"
