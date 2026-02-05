@@ -10,7 +10,7 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 
-COPY ["SteelWarehouse/SteelWarehouse.csproj", "SteelWarehouse/"]
+COPY ["SteelWarehouse/SteelWarehouse.Api.csproj", "SteelWarehouse/"]
 COPY ["SteelWarehouse.App/SteelWarehouse.App.csproj", "SteelWarehouse.App/"]
 COPY ["SteelWarehouse.Domain/SteelWarehouse.Domain.csproj", "SteelWarehouse.Domain/"]
 COPY ["SteelWarehouse.Infrastructure/SteelWarehouse.Infrastructure.csproj", "SteelWarehouse.Infrastructure/"]
