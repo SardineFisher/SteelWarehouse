@@ -25,6 +25,7 @@ services:
       - Storage__Type=Postgres
       - ConnectionStrings__Default=Host=db;Port=5432;Database=steelwarehousedb;Username=user;Password=password
       - TZ=Europe/Moscow
+      - ASPNETCORE_ENVIRONMENT=Development
 
 volumes:
   postgres_data:
