@@ -17,27 +17,45 @@ if (storageType == "Postgres")
     if (string.IsNullOrWhiteSpace(connectionString))
         throw new InvalidOperationException("Строка подключения пустая");
 
-    EnsureDatabase.For.PostgresqlDatabase(connectionString);
+    var retryCount = 10;
+    var delay = TimeSpan.FromSeconds(3);
+    var success = false;
 
-    var upgrader = DeployChanges.To
-        .PostgresqlDatabase(connectionString)
-        .WithScriptsEmbeddedInAssembly(Assembly.GetExecutingAssembly())
-        .LogToConsole()
-        .Build();
-
-    int retries = 10;
-    while (retries-- > 0)
+    while (retryCount > 0)
     {
-        if (upgrader.TryConnect(out _))
+        try
         {
-            var result = upgrader.PerformUpgrade();
-            if (!result.Successful)
-                throw result.Error;
+            Console.WriteLine($"Попытка подключения к БД... Осталось попыток: {retryCount}");
 
+            EnsureDatabase.For.PostgresqlDatabase(connectionString);
+
+            var upgrader = DeployChanges.To
+                .PostgresqlDatabase(connectionString)
+                .WithScriptsEmbeddedInAssembly(Assembly.GetExecutingAssembly())
+                .LogToConsole()
+                .Build();
+
+            var result = upgrader.PerformUpgrade();
+
+            if (!result.Successful)
+            {
+                throw new Exception("Ошибка миграции", result.Error);
+            }
+
+            Console.WriteLine("БД успешно инициализирована и мигрирована");
+            success = true;
             break;
         }
-
-        Thread.Sleep(2000);
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Ошибка подключения к БД: {ex.Message}. Повтор через {delay.TotalSeconds} сек...");
+            retryCount--;
+            Thread.Sleep(delay);
+        }
+    }
+    if (!success)
+    {
+        throw new Exception("Не удалось подключиться к базе данных после нескольких попыток.");
     }
 }
 
